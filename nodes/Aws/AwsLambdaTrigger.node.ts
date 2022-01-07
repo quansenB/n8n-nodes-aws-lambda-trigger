@@ -196,6 +196,7 @@ export class AwsLambdaTrigger implements INodeType {
 							}
 
 							const fileJson = file.toJSON() as unknown as IDataObject;
+							//@ts-ignore
 							const fileContent = await fs.promises.readFile(file.path);
 
 							returnItem.binary![binaryPropertyName] = await this.helpers.prepareBinaryData(Buffer.from(fileContent), fileJson.name as string, fileJson.type as string);
