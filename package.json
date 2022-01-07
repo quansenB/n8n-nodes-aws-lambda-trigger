@@ -1,9 +1,9 @@
 {
-  "name": "@digital-boss/n8n-nodes-aws-firehose",
+  "name": "@digital-boss/n8n-nodes-aws-lambda-trigger",
   "version": "1.1.0",
   "author": "Iñaki Breinbauer",
   "license": "GPL-3.0",
-  "description": "AWS Firehose support for n8n",
+  "description": "AWS Lambda Trigger support for n8n",
   "keywords": [
     "n8n",
     "nodemation",
@@ -11,13 +11,14 @@
     "digital north consulting",
     "nodes",
     "custom",
-    "AWS Firehose",
+    "AWS Lambda",
+    "Trigger",
     "workflow",
     "crm"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/quansenB/n8n-nodes-dnc-aws-firehose.git"
+    "url": "git+https://github.com/quansenB/n8n-nodes-dnc-aws-lambda-trigger.git"
   },
   "main": "index.js",
   "scripts": {
@@ -33,7 +34,7 @@
   ],
   "n8n": {
     "nodes": [
-      "dist/nodes/Aws/Firehose/AwsFirehose.node.js"
+      "dist/nodes/Aws/AwsLambdaTrigger.node.js"
     ]
   },
   "devDependencies": {
