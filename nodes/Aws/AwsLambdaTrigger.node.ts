@@ -81,7 +81,7 @@ export class AwsLambdaTrigger implements INodeType {
 					name: 'default',
 					httpMethod: 'POST',
 					responseMode: 'onReceived',
-					path: 'webhook',
+					path: 'aws-lambda-trigger',
 				},
 			],
 			properties: [
