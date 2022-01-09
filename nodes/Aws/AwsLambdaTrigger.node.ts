@@ -81,7 +81,7 @@ export class AwsLambdaTrigger implements INodeType {
 					name: 'default',
 					httpMethod: 'POST',
 					responseMode: 'onReceived',
-					path: 'aws-lambda-trigger',
+					path: 'webhook',
 				},
 			],
 			properties: [
@@ -119,7 +119,7 @@ export class AwsLambdaTrigger implements INodeType {
 					type: 'options',
 					displayOptions: {
 						show: {
-							simple: [
+							simplify: [
 								true,
 							],
 						},
@@ -143,6 +143,7 @@ export class AwsLambdaTrigger implements INodeType {
 						},
 					],
 					default: 'body',
+					description: 'The part of the data to display.',
 				},
 			],
 		};
@@ -234,6 +235,7 @@ export class AwsLambdaTrigger implements INodeType {
 							}
 
 							const fileJson = file.toJSON() as unknown as IDataObject;
+							//@ts-ignore
 							const fileContent = await fs.promises.readFile(file.path);
 
 							returnItem.binary![binaryPropertyName] = await this.helpers.prepareBinaryData(Buffer.from(fileContent), fileJson.name as string, fileJson.type as string);
@@ -262,19 +264,17 @@ export class AwsLambdaTrigger implements INodeType {
 			if (dataKey==='body') {
 				response.json.body = this.getBodyData();
 			} else if (dataKey==='params') {
-				response.json.headers = this.getParamsData();
+				response.json.params = this.getParamsData();
 			} else if (dataKey==='query') {
 				response.json.query = this.getQueryData();
 			} else if (dataKey==='headers') {
 				response.json.headers = headers
-			} else {
-				response.json = {
-					headers,
-					params: this.getParamsData(),
-					query: this.getQueryData(),
-					body: this.getBodyData(),
-				};
 			}
+		} else {
+			response.json.headers = headers
+			response.json.params = this.getParamsData();
+			response.json.query = this.getQueryData();
+			response.json.body = this.getBodyData();
 		}
 
 		let webhookResponse: string | undefined;
