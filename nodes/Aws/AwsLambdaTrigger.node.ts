@@ -106,6 +106,44 @@ export class AwsLambdaTrigger implements INodeType {
 					default: 'none',
 					description: 'The way to authenticate.',
 				},
+				{
+					displayName: 'Simplify Response',
+					name: 'simplify',
+					type: 'boolean',
+					default: false,
+					description: 'Return a simplified version of the response instead of the raw data.',
+				},
+				{
+					displayName: 'Simplify Data Key',
+					name: 'dataKey',
+					type: 'options',
+					displayOptions: {
+						show: {
+							simple: [
+								true,
+							],
+						},
+					},
+					options: [
+						{
+							name: 'Body',
+							value: 'body',
+						},
+						{
+							name: 'Params',
+							value: 'params',
+						},
+						{
+							name: 'Query',
+							value: 'query',
+						},
+						{
+							name: 'Headers',
+							value: 'headers',
+						},
+					],
+					default: 'body',
+				},
 			],
 		};
 
@@ -196,7 +234,6 @@ export class AwsLambdaTrigger implements INodeType {
 							}
 
 							const fileJson = file.toJSON() as unknown as IDataObject;
-							//@ts-ignore
 							const fileContent = await fs.promises.readFile(file.path);
 
 							returnItem.binary![binaryPropertyName] = await this.helpers.prepareBinaryData(Buffer.from(fileContent), fileJson.name as string, fileJson.type as string);
@@ -212,18 +249,33 @@ export class AwsLambdaTrigger implements INodeType {
 						],
 					});
 				});
-
 			});
 		}
 
 		const response: INodeExecutionData = {
-			json: {
-				headers,
-				params: this.getParamsData(),
-				query: this.getQueryData(),
-				body: this.getBodyData(),
-			},
+			json: {},
 		};
+
+		const simplify = this.getNodeParameter('simplify') as boolean;
+		if (simplify){
+			const dataKey = this.getNodeParameter('dataKey') as string;
+			if (dataKey==='body') {
+				response.json.body = this.getBodyData();
+			} else if (dataKey==='params') {
+				response.json.headers = this.getParamsData();
+			} else if (dataKey==='query') {
+				response.json.query = this.getQueryData();
+			} else if (dataKey==='headers') {
+				response.json.headers = headers
+			} else {
+				response.json = {
+					headers,
+					params: this.getParamsData(),
+					query: this.getQueryData(),
+					body: this.getBodyData(),
+				};
+			}
+		}
 
 		let webhookResponse: string | undefined;
 
